@@ -57,6 +57,9 @@ export default function RegisterForm() {
               <div>
                 <button type="submit" class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Sign in</button>
               </div>
+              <div className="bg-red-500 text-white w-fit trext-sm py-1 px-3 rounded-md mt-2">
+                Error Message
+              </div>
             </form>
           </div>
         </div>
