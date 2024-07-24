@@ -22,7 +22,7 @@ export default function RegisterForm() {
 
     try{
       const res = await fetch('api/register', {
-        method: POST,
+        method:"POST",
         headers: {
           "Content-Type": "application/json"
         },
