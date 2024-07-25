@@ -227,6 +227,31 @@ export default function Dashboard() {
                     </div>
                     </div>
               </div>
+              <div className="mx-auto max-w-7xl px-6 lg:px-8 mt-10">
+                <div className="flex flex-col items-center lg:flex-row lg:justify-center gap-6">
+                    <div className="flex-1 min-h-[100px] lg:min-h-[300px] min-w-[100px] bg-white rounded-lg shadow-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold mb-2 text-black">Box Title 1</h2>
+                        <p className="text-gray-600 mb-4">This is a small description for box 1. It provides brief information about the content of the box.</p>
+                    </div>
+                    <button className="self-start bg-black text-white rounded py-2 px-4 hover:bg-gray-800">Let's Go!</button>
+                    </div>
+                    <div className="flex-1 min-h-[100px] lg:min-h-[300px] min-w-[100px] bg-white rounded-lg shadow-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold mb-2 text-black">Box Title 2</h2>
+                        <p className="text-gray-600 mb-4">This is a small description for box 2. It provides brief information about the content of the box.</p>
+                    </div>
+                    <button className="self-start bg-black text-white rounded py-2 px-4 hover:bg-gray-800">Let's Go!</button>
+                    </div>
+                    <div className="flex-1 min-h-[100px] lg:min-h-[300px] min-w-[100px] bg-white rounded-lg shadow-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <h2 className="text-2xl font-bold mb-2 text-black">Box Title 3</h2>
+                        <p className="text-gray-600 mb-4">This is a small description for box 3. It provides brief information about the content of the box.</p>
+                    </div>
+                    <button className="self-start bg-black text-white rounded py-2 px-4 hover:bg-gray-800">Let's Go!</button>
+                    </div>
+                </div>
+                </div>
             </main>
           </div>
         </>
