@@ -1,6 +1,10 @@
-import UserInfo from "@/components/UserInfo"
+"use client";
+
+import { signOut } from "next-auth/react"
+import { useSession } from "next-auth/react";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+
 
 const user = {
     name: 'Tom Cook',
@@ -14,10 +18,11 @@ const navigation = [
     { name: 'Calorie Tracker', href: '#', current: false },
     { name: 'Recipe Maker', href: '#', current: false },
 ]
+
 const userNavigation = [
     { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
-    { name: 'Sign out', href: '#' },
+    { name: 'Sign out', href: '/' },
 ]
 
 function classNames(...classes) {
@@ -26,6 +31,8 @@ function classNames(...classes) {
 
 
 export default function Dashboard() {
+    const {data:session} = useSession();
+
     return (
         <>
           {/*
@@ -86,6 +93,7 @@ export default function Dashboard() {
                           {userNavigation.map((item) => (
                             <MenuItem key={item.name}>
                               <a
+                                onClick={() => item.name === 'Sign out'? signOut() : null}
                                 href={item.href}
                                 className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                               >
@@ -147,11 +155,12 @@ export default function Dashboard() {
                   <div className="mt-3 space-y-1 px-2">
                     {userNavigation.map((item) => (
                       <DisclosureButton
+                        onClick={() => item.name === 'Sign out'? signOut() : null}
                         key={item.name}
                         as="a"
                         href={item.href}
                         className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
-                      >
+                        >
                         {item.name}
                       </DisclosureButton>
                     ))}
