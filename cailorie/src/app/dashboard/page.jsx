@@ -4,11 +4,10 @@ import { signOut } from "next-auth/react"
 import { useSession } from "next-auth/react";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import React , {useState, useEffect} from "react";
 
 
 const user = {
-    name: 'Tom Cook',
-    email: 'tom@example.com',
     imageUrl:
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
 }
@@ -21,10 +20,8 @@ const navigation = [
 
 const userNavigation = [
     { name: 'Your Profile', href: '#' },
-    { name: 'Settings', href: '#' },
     { name: 'Sign out', href: '/' },
 ]
-
 
 const stats = [
     { name: 'Calories left today', value: '69' },
@@ -37,20 +34,87 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+async function updateBudget(email, newBudget) {
+  try {
+    console.log("Starting fetch request...");
+    
+    const response = await fetch('/api/update', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, budget: newBudget }),
+    });
+
+    console.log("Raw response:", response);
+
+    if (!response.ok) {
+      console.error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Parsed data:", data);
+  } catch (error) {
+    console.error("Error in updateBudget:", error);
+  }
+}
+
+async function retrieveBudget(email) {
+  try {
+    const response = await fetch(`/api/budget?email=${encodeURIComponent(email)}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.budget; 
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 export default function Dashboard() {
-    const {data:session} = useSession();
+  const { data: session } = useSession();
+
+  const [calorieBudget, setCalorieBudget] = useState(0);
+  const [calorieText, setCalorieText] = useState(0);
+
+  useEffect(() => {
+    const fetchBudget = async () => {
+      if (session?.user?.email) {
+        const budget = await retrieveBudget(session.user.email);
+        console.log("HERE IS THE BUDGET!!! " + budget);
+        if (budget > 0) {
+          setCalorieBudget(budget);
+          setCalorieText(budget);
+        }
+      }
+    };
+
+    fetchBudget();
+  }, [session?.user?.email]); // Dependency array to trigger effect when email changes
+
+
+    function changeCalorieBudget(event) {
+      const value = event.target.value;
+      setCalorieBudget(value);
+    }
+
+    async function changeCalorieText(event) {
+      event.preventDefault();
+      await updateBudget(session?.user?.email, calorieBudget);
+      setCalorieText(calorieBudget);
+    }
 
     return (
         <>
-          {/*
-            This example requires updating your template:
-    
-            ```
-            <html class="h-full bg-gray-100">
-            <body class="h-full">
-            ```
-          */}
           <div className="min-h-full">
             <Disclosure as="nav" className="bg-gray-800">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -76,14 +140,6 @@ export default function Dashboard() {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                      <button
-                        type="button"
-                        className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                      >
-                        <span className="absolute -inset-1.5" />
-                        <span className="sr-only">View notifications</span>
-                        <BellIcon aria-hidden="true" className="h-6 w-6" />
-                      </button>
     
                       {/* Profile dropdown */}
                       <Menu as="div" className="relative ml-3">
@@ -148,17 +204,9 @@ export default function Dashboard() {
                       <img alt="" src={user.imageUrl} className="h-10 w-10 rounded-full" />
                     </div>
                     <div className="ml-3">
-                      <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                      <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
+                      <div className="text-base font-medium leading-none text-white">{session?.user?.email}</div>
+                      <div className="text-sm font-medium leading-none text-gray-400">{session?.user?.email}</div>
                     </div>
-                    <button
-                      type="button"
-                      className="relative ml-auto flex-shrink-0 rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
-                    >
-                      <span className="absolute -inset-1.5" />
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon aria-hidden="true" className="h-6 w-6" />
-                    </button>
                   </div>
                   <div className="mt-3 space-y-1 px-2">
                     {userNavigation.map((item) => (
@@ -209,11 +257,15 @@ export default function Dashboard() {
                     </div>
                     <div className="mx-auto max-w-7xl px-6 lg:px-8">
                     <div className="mx-auto max-w-2xl lg:mx-0">
-                        <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">Work with us</h2>
+                        <h2 className="text-4xl font-bold tracking-tight text-white sm:text-6xl"> Hello {session?.user?.name} </h2>
+                        <h3 className="text-2xl tracking-tight text-white sm:text-3xl"> Your calorie budget today is {calorieText}</h3>
                         <p className="mt-6 text-lg leading-8 text-gray-300">
-                        Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
-                        fugiat veniam occaecat fugiat aliqua.
+                        Let's make today a great day!
                         </p>
+                        <form onSubmit={changeCalorieText}> 
+                          <input style={{color: "black"}} onChange={changeCalorieBudget} value={calorieBudget} name="calorieBudget"/>
+                          <button> Submit </button>
+                        </form>
                     </div>
                     <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
                         <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
